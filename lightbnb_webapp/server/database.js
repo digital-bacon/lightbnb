@@ -75,14 +75,25 @@ exports.getAllReservations = getAllReservations;
  * @return {Promise<[{}]>}  A promise to the properties.
  */
 const getAllProperties = function(options, limit = 10) {
-  const limitedProperties = {};
-  for (let i = 1; i <= limit; i++) {
-    limitedProperties[i] = properties[i];
-  }
-  return Promise.resolve(limitedProperties);
+  const query = {
+    text: `
+      SELECT
+        *
+      FROM properties
+      FETCH FIRST $1 ROWS ONLY;
+      ;`,
+    values: [limit],
+  };
+  
+  return pool
+    .query(query)
+    .then((result) => {
+      console.log(result.rows);
+      return result.rows;
+    })
+    .catch(err => console.error('query error', err.stack));
 }
 exports.getAllProperties = getAllProperties;
-
 
 /**
  * Add a property to the database
