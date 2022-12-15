@@ -272,6 +272,32 @@ const getAllProperties = function(options, limit = 10) {
 exports.getAllProperties = getAllProperties;
 
 /**
+ * Get a single property.
+ * @param {number} propertyid The unique id of the property
+ * @return {Promise<[{}]>}  A promise to the properties.
+ */
+const getPropertyById = function(propertyId) {
+
+  const query = {
+    text: `
+      SELECT
+        *
+      FROM properties
+      WHERE id = $1
+    ;`,
+    values: [propertyId]
+  }
+
+  return pool
+    .query(query)
+    .then((result) => {
+      return result.rows;
+    })
+    .catch(err => console.error('query error', err.stack));
+}
+exports.getPropertyById = getPropertyById;
+
+/**
  * Add a property to the database
  * @param {{}} property An object containing all of the property details.
  * @return {Promise<{}>} A promise to the property.
