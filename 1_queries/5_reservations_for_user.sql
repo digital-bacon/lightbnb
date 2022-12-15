@@ -1,6 +1,10 @@
 SELECT
   reservations.id,
   properties.title,
+  properties.thumbnail_photo_url,
+  properties.parking_spaces,
+  properties.number_of_bathrooms,
+  properties.number_of_bedrooms,
   properties.cost_per_night,
   reservations.start_date,
   AVG(property_reviews.rating) AS average_rating
