@@ -169,16 +169,98 @@ exports.getAllReservations = getAllReservations;
  * @return {Promise<[{}]>}  A promise to the properties.
  */
 const getAllProperties = function(options, limit = 10) {
+
+  const queryParams = [];
+  queryParams.push(limit);
+
   const query = {
     text: `
       SELECT
-        *
+        properties.*,
+        AVG(rating) AS average_rating
       FROM properties
-      FETCH FIRST $1 ROWS ONLY
-      ;`,
-    values: [limit],
+      JOIN property_reviews
+        ON property_id = properties.id`,
+  };
+
+  if (options.city) {
+    // TODO: sanitize input against SQL injection
+    queryParams.push(`%${options.city}%`);
+    if (!query.text.includes('WHERE')) {
+      query.text += `
+      WHERE `;
+    } else {
+      query.text += `
+      AND `;
+    }
+    query.text += `city LIKE $${queryParams.length}`;
+  };
+
+  if (options.owner_id) {
+    queryParams.push(options.owner_id);
+    if (!query.text.includes('WHERE')) {
+      query.text += `
+      WHERE `;
+    } else {
+      query.text += `
+      AND `;
+    }
+
+    query.text += `owner_id = $${queryParams.length}`;
   };
   
+  query.text += `
+    GROUP BY properties.id, title, cost_per_night`;
+
+  if (options.minimum_rating) {
+    queryParams.push(options.minimum_rating);
+    if (!query.text.includes('HAVING')) {
+      query.text += `
+      HAVING `;
+    } else {
+      query.text += `
+      AND `;
+    }
+
+    query.text += `AVG(rating) >= $${queryParams.length}`;
+  };
+
+  if (options.minimum_price_per_night) {
+    const minPriceInDollars = options.minimum_price_per_night * 100;
+    queryParams.push(minPriceInDollars);
+    if (!query.text.includes('HAVING')) {
+      query.text += `
+      HAVING `;
+    } else {
+      query.text += `
+      AND `;
+    }
+
+    query.text += `cost_per_night >= $${queryParams.length}`;
+  };
+
+  if (options.maximum_price_per_night) {
+    // TODO: ensure that, given a min price as well, max is higher than min
+    const maxPriceInDollars = options.maximum_price_per_night * 100;
+    queryParams.push(maxPriceInDollars);
+    if (!query.text.includes('HAVING')) {
+      query.text += `
+      HAVING `;
+    } else {
+      query.text += `
+      AND `;
+    }
+
+    query.text += `cost_per_night <= $${queryParams.length}`;
+  };
+
+  query.text += `
+    ORDER BY cost_per_night ASC
+    FETCH FIRST $1 ROWS ONLY
+    ;`;
+
+  query.values = queryParams
+
   return pool
     .query(query)
     .then((result) => {
