@@ -193,6 +193,7 @@ const getAllProperties = function(options, limit = 10) {
       query.text += `
       AND `;
     }
+    
     query.text += `city LIKE $${queryParams.length}`;
   };
 
@@ -325,8 +326,55 @@ const addProperty = function(property) {
       return rows[0];
     })
     .catch(err => console.error('query error', err.stack));
-  
-
 
 }
 exports.addProperty = addProperty;
+
+/**
+ * Add a reservation to the database
+ * @param {{}} reservation An object containing all of the reservation details.
+ * @return {Promise<{}>} A promise to the reservation.
+ */
+const addReservation = function(reservation) {
+  const query = {
+    text: `
+      INSERT INTO reservations (
+        property_id, 
+        guest_id, 
+        start_date, 
+        end_date
+      )
+      VALUES ($1, $2, $3, $4)
+      RETURNING *
+      ;`,
+    values: [
+      reservation.property_id,
+      reservation.guest_id,
+      reservation.start_date,
+      reservation.end_date
+    ],
+  };
+  
+  return pool
+    .query(query)
+    .then((result) => {
+      let rows = result.rows;
+      if (rows.length === 0) {
+        return null;
+      }
+      console.log(rows[0])
+      return rows[0];
+    })
+    .catch(err => console.error('query error', err.stack));
+
+}
+exports.addReservation = addReservation;
+
+// const reservationData = {
+//   property_id: 14,
+//   guest_id: 6,
+//   start_date: '2018-09-11',
+//   end_date: '2018-09-26'
+// }
+
+// addReservation(reservationData);
