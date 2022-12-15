@@ -38,7 +38,7 @@ const getUserWithEmail = function(email) {
       if (rows.length === 0) {
         return null;
       }
-      return rows;
+      return rows[0];
     })
     .catch(err => console.error('query error', err.stack));
 }
@@ -50,7 +50,30 @@ exports.getUserWithEmail = getUserWithEmail;
  * @return {Promise<{}>} A promise to the user.
  */
 const getUserWithId = function(id) {
-  return Promise.resolve(users[id]);
+  if (!id || typeof id !== 'number') {
+    return null;
+  }
+  
+  const query = {
+    text: `
+      SELECT
+        *
+      FROM users
+      WHERE id = $1
+      ;`,
+    values: [id],
+  };
+  
+  return pool
+    .query(query)
+    .then((result) => {
+      let rows = result.rows;
+      if (rows.length === 0) {
+        return null;
+      }
+      return rows[0];
+    })
+    .catch(err => console.error('query error', err.stack));
 }
 exports.getUserWithId = getUserWithId;
 
@@ -102,7 +125,6 @@ const getAllProperties = function(options, limit = 10) {
   return pool
     .query(query)
     .then((result) => {
-      console.log(result.rows);
       return result.rows;
     })
     .catch(err => console.error('query error', err.stack));
