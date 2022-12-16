@@ -32,8 +32,16 @@ $(() => {
     .then((json) => json.user);
   }
 
-  
-    
   window.propertyListings.addProperties = addProperties;
+
+  $propertyListings.on('click', function(event) {
+    if (event.target.name === 'property-listing__reserve') {
+      const propertyId = $(event.target)
+        .closest('article')
+        .attr('id')
+        .replace('property_', '');
+      views_manager.show('newReservation', { propertyId: Number(propertyId) });
+    };
+  });
 
 });

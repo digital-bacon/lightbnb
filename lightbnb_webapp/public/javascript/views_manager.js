@@ -1,12 +1,13 @@
 $(() => {
-
+  
   const $main = $('#main-content');
 
   window.views_manager = {};
 
-  window.views_manager.show = function(item) {
+  window.views_manager.show = function(item, options) {
     $newPropertyForm.detach();
     $propertyListings.detach();
+    $newReservationForm.detach();
     $searchPropertyForm.detach();
     $logInForm.detach();
     $signUpForm.detach();
@@ -15,8 +16,15 @@ $(() => {
       case 'listings':
         $propertyListings.appendTo($main);
         break;
+      case 'listing':
+        $propertyListings.appendTo($main);
+        break;
       case 'newProperty':
         $newPropertyForm.appendTo($main);
+        break;
+      case 'newReservation':
+        $newReservationForm.find("input[name='id']").val(options.propertyId);
+        $newReservationForm.appendTo($main);
         break;
       case 'searchProperty':
         $searchPropertyForm.appendTo($main);
