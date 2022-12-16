@@ -23,7 +23,7 @@ $(() => {
         $newPropertyForm.appendTo($main);
         break;
       case 'newReservation':
-        $newReservationForm.find("input[name='id']").val(options.propertyId);
+        $newReservationForm.find("input[name='property_id']").val(options.propertyId);
         $newReservationForm.appendTo($main);
         break;
       case 'searchProperty':

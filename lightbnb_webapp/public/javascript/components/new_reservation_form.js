@@ -15,7 +15,7 @@ $(() => {
 
     <div class="new-reservation-form__field-wrapper">
         <button>Make Reservation</button>
-        <input type="hidden" name="id">
+        <input type="hidden" name="property_id">
     </div>
     
   </form>

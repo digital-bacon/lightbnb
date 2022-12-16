@@ -119,7 +119,7 @@ const getAllReservations = function(guest_id, limit = 10) {
   if (!guest_id || typeof guest_id !== 'number') {
     return null;
   }
-  
+  console.log(guest_id)
   const query = {
     text: `
       SELECT

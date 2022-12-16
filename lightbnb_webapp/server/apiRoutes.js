@@ -9,21 +9,6 @@ module.exports = function(router, database) {
     }); 
   });
 
-  router.get('/reservations/:id', (req, res) => {
-    const userId = req.session.userId;
-    if (!userId) {
-      res.error("💩");
-      return;
-    }
-    const propertyId = req.params.id;
-    database.getPropertyById(propertyId)
-    .then(property => res.send({property}))
-    .catch(e => {
-      console.error(e);
-      res.send(e)
-    });
-  });
-
   router.get('/reservations', (req, res) => {
     const userId = req.session.userId;
     if (!userId) {
