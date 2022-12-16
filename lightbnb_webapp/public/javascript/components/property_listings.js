@@ -21,14 +21,19 @@ $(() => {
     clearListings();
     for (const propertyId in properties) {
       const property = properties[propertyId];
-      const listing = propertyListing.createListing(property, isReservation);
+      const user = getUser();
+      const listing = propertyListing.createListing(property, isReservation, user);
       addListing(listing);
     }
   }
-  window.propertyListings.addProperties = addProperties;
 
-  $($propertyListings).on('click', '.property-listing__reserve_button', function() {
-    views_manager.show('newReservation');
-  });
+  function getUser() {
+    return getMyDetails()
+    .then((json) => json.user);
+  }
+
+  
+    
+  window.propertyListings.addProperties = addProperties;
 
 });
