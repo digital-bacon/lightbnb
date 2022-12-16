@@ -12,7 +12,7 @@ module.exports = function(router, database) {
   router.get('/reservations', (req, res) => {
     const userId = req.session.userId;
     if (!userId) {
-      res.error("💩");
+      return res.status(403).send('401 - Unauthorized. You need to be logged in to perform that action.');
       return;
     }
     database.getAllReservations(userId)
@@ -37,6 +37,9 @@ module.exports = function(router, database) {
 
   router.post('/reservations', (req, res) => {
     const userId = req.session.userId;
+    if (!userId) {
+      return res.status(403).send('401 - Unauthorized. You need to be logged in to perform that action.');
+    }
     database.addReservation({...req.body, guest_id: userId})
       .then(reservation => {
         res.send(reservation);

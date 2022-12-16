@@ -395,12 +395,3 @@ const addReservation = function(reservation) {
 
 }
 exports.addReservation = addReservation;
-
-// const reservationData = {
-//   property_id: 14,
-//   guest_id: 6,
-//   start_date: '2018-09-11',
-//   end_date: '2018-09-26'
-// }
-
-// addReservation(reservationData);
